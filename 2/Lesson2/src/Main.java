@@ -1,4 +1,5 @@
 import com.sbt.school.tasks.Tasks;
+import com.sbt.school.tasks.Test;
 
 import java.io.IOException;
 
@@ -7,6 +8,10 @@ public class Main {
     private static String filename = "unique_file.txt";
 
     public static void main(String[] args) throws IOException {
+
+        Test.foo();
+
+        if(true) return;
 
         System.out.println("Different words count is " + Tasks.task1(filename));
         Tasks.task2(filename);
