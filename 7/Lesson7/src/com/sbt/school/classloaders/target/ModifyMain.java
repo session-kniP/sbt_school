@@ -1,4 +1,4 @@
-package com.sbt.school.classloaders;
+package com.sbt.school.classloaders.target;
 
 import javax.tools.*;
 import java.io.File;

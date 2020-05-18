@@ -1,19 +1,19 @@
-package com.sbt.school.classloaders;
+package com.sbt.school.classloaders.wrapper;
 
-import javax.naming.Name;
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
-import java.io.*;
+import com.sbt.school.classloaders.target.ModifyMain;
+
+import javax.swing.plaf.metal.MetalTextFieldUI;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.lang.reflect.Type;
 import java.net.URLClassLoader;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @ Class-wrapper on ModifyMain.java
@@ -42,18 +42,40 @@ public class ClassLoaderWrapper {
 
 
     public Class<?> findClassWithMethod(String className, String methodName, List<String> paths) throws FileNotFoundException, ClassNotFoundException {
-
         List<Class<?>> classes = findClasses(paths, className);
-
 
         for (Class<?> cl : classes) {
             Method[] methods = cl.getDeclaredMethods();
-            if (Arrays.stream(methods).anyMatch(m -> m.getName().equals(methodName))) {
+            if (Arrays.stream(methods).anyMatch(m -> m.getName().equals(methodName) && m.getParameterTypes().length == 0)) {
                 return cl;
             }
         }
 
         throw new ClassNotFoundException(String.format("Class %s with method %s not found", className, methodName));
+    }
+
+
+    public Class<?> findClassWithMethod(String className, String methodName, List<String> paths, String... arguments) throws FileNotFoundException, ClassNotFoundException {
+        List<Class<?>> classes = findClasses(paths, className);
+
+        for (Class<?> cl : classes) {
+            Class.forName("String");
+            Method[] methods = cl.getDeclaredMethods();
+
+            for (Method m : methods) {
+                if (m.getName().equals(methodName)) {
+                    Class<?>[] types = m.getParameterTypes();
+
+                    if (compareArgumentNames(types, arguments)) {
+                        return cl;
+                    }
+                }
+            }
+        }
+
+        String exceptionString = getArgumentExceptionString(arguments);
+
+        throw new ClassNotFoundException(String.format(exceptionString, className, methodName, arguments));
     }
 
 
@@ -100,8 +122,6 @@ public class ClassLoaderWrapper {
     }
 
 
-
-
     private List<Class<?>> getClasses(String dirPath, String className) throws FileNotFoundException {
 
         List<Class<?>> classes = new ArrayList<>();
@@ -128,7 +148,7 @@ public class ClassLoaderWrapper {
                         classes.add(loaded);
                     }
                 }
-            }  catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         }
@@ -166,5 +186,61 @@ public class ClassLoaderWrapper {
 
     }
 
+
+    private String getArgumentExceptionString(String[] arguments) {
+        StringBuilder exceptionBuilder = new StringBuilder();
+        exceptionBuilder.append("Class %s with method (%s");
+
+        for (int i = 0; i < arguments.length; i++) {
+            exceptionBuilder.append(arguments[i]);
+            if (i != arguments.length - 1) {
+                exceptionBuilder.append("%s, ");
+            }
+        }
+
+        exceptionBuilder.append(") not found");
+        return exceptionBuilder.toString();
+    }
+
+
+    /**
+     * @param methodArguments classes of arguments of methods
+     * @param targetArguments classnames of target arguments
+     * @return true if argument classnames of method are equal to all target arguments, false otherwise
+     */
+    private boolean compareArgumentNames(Class<?>[] methodArguments, String... targetArguments) {
+        //a little bit high level
+        List<String> argNames = Arrays.stream(methodArguments).map(Class::getName).collect(Collectors.toList());
+        List<String> argNamesWithoutPackages = argNames.stream().map(n -> n.replaceAll(".+\\.", "")).collect(Collectors.toList());
+
+        for (String arg : targetArguments) {
+            if (withPackage(arg)) {
+                if (!argNames.contains(arg)) {
+                    return false;
+                }
+            } else {
+                if (!argNamesWithoutPackages.contains(arg)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Checks if the classname is with package:
+     * Example: some.package.name.ClassName     - with package
+     *          ClassName - without package
+     * @param name classname of argument
+     * @return true if class name is in with-package notation, false otherwise
+     */
+    private boolean withPackage(String name) {
+        if (name.replaceAll(".+\\.", "").equals(name)) {
+            return false;
+        }
+        return true;
+    }
 
 }

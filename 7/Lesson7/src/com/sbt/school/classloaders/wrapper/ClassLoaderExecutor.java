@@ -1,18 +1,11 @@
-package com.sbt.school.classloaders;
+package com.sbt.school.classloaders.wrapper;
 
 
-import javax.tools.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import com.sbt.school.classloaders.target.ModifyMain;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.IllegalFormatException;
-import java.util.NoSuchElementException;
 
 /**
  * This class calls private methods from ModifyMain.java using reflections
