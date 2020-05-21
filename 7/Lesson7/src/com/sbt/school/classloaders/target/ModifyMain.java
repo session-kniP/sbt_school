@@ -11,7 +11,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 
+
 /**
+ * @author Sergey Kramarev
+ * @link https://bitbucket.org/ksnovich/java-school/src/master/classloader/src/main/java/com/sbt/example/classloader/hw/ModifyMain.java
  * Сделать свой класслоадер который из имеющегося списка путей на диске C:\ (2шт) ищет  класс SayHello
  * с методом sayHello().
  * К примеру в одном каталоге есть SayHello#say() в другом каталоге класс SayHello#sayHello()

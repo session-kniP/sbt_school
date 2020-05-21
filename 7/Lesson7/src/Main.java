@@ -17,14 +17,18 @@ public class Main {
 
 
     /**
-     * args: 0. DesiredClass
+     * args:
+     * 0. DesiredClass
      * 1. DesiredMethod
-     * 2. List of folders
+     * 2. DesiredArgs
+     * 3. List of folders
+     * 4. Help
      */
-
     public static void main(String[] args) {
         System.out.println("ClassLoaders HW");
-        
+
+//        args = new String[]{"-c", "DesiredClass", "-m", "getSomethingMethod", "-a", "String", "-p", "/home/chatsky/Documents/classes/"};
+
         FlagList flagList = new FlagList();
         flagList.addFlag(new Flag("h", "Help", Flag.Type.HELP));
         flagList.addFlag(new Flag("c", "ClassName", Flag.Type.CLASS_NAME));
@@ -59,16 +63,33 @@ public class Main {
 
 
             } else {
-                classesWithMethod[0] = wrapper.findClassWithMethod(
-                        classNameGroup.getParameters().get(0).getValue(),
-                        methodNameGroup.getParameters().get(0).getValue(),
-                        pathGroup.getStringParameters());
+                if (argsGroup != null && argsGroup.getParameters().size() > 0) {
+                    classesWithMethod[0] = wrapper.findClassWithMethod(
+                            classNameGroup.getParameters().get(0).getValue(),
+                            methodNameGroup.getParameters().get(0).getValue(),
+                            pathGroup.getStringParameters(),
+                            argsGroup.getParameters().get(0).getValue());
+                } else {
+                    classesWithMethod[0] = wrapper.findClassWithMethod(
+                            classNameGroup.getParameters().get(0).getValue(),
+                            methodNameGroup.getParameters().get(0).getValue(),
+                            pathGroup.getStringParameters());
+                }
+
             }
 
 
             for (Class<?> c : classesWithMethod) {
                 for (String methodName : methodNameGroup.getStringParameters()) {
-                    Method m = c.getDeclaredMethod(methodName);
+                    Method m = null;
+                    for (Method method : c.getDeclaredMethods()) {
+                        if (methodName.equals(method.getName())) {
+                            m = method;
+                            break;
+                        }
+                    }
+
+                    assert m != null;
                     System.out.println(String.format("--From class '%s' executing method '%s'--", c.getName(), m.getName()));
                     m.invoke(c.getDeclaredConstructor().newInstance());
                     System.out.println("!--'" + m.getName() + "' Execution ends--");

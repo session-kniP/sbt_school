@@ -2,17 +2,14 @@ package com.sbt.school.classloaders.wrapper;
 
 import com.sbt.school.classloaders.target.ModifyMain;
 
-import javax.swing.plaf.metal.MetalTextFieldUI;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -23,10 +20,6 @@ public class ClassLoaderWrapper {
     private final String extensionRegex = "[.]class";
     private ClassLoaderExecutor executor;
 
-    public enum NameType {
-        WITH_PACKAGE,
-        WITHOUT_PACKAGE
-    }
 
     public ClassLoaderWrapper() {
         this.executor = new ClassLoaderExecutor();
@@ -59,7 +52,6 @@ public class ClassLoaderWrapper {
         List<Class<?>> classes = findClasses(paths, className);
 
         for (Class<?> cl : classes) {
-            Class.forName("String");
             Method[] methods = cl.getDeclaredMethods();
 
             for (Method m : methods) {
@@ -211,7 +203,6 @@ public class ClassLoaderWrapper {
     private boolean compareArgumentNames(Class<?>[] methodArguments, String... targetArguments) {
         //a little bit high level
         List<String> argNames = Arrays.stream(methodArguments).map(Class::getName).collect(Collectors.toList());
-        List<String> argNamesWithoutPackages = argNames.stream().map(n -> n.replaceAll(".+\\.", "")).collect(Collectors.toList());
 
         for (String arg : targetArguments) {
             if (withPackage(arg)) {
@@ -219,6 +210,8 @@ public class ClassLoaderWrapper {
                     return false;
                 }
             } else {
+                List<String> argNamesWithoutPackages = argNames.stream().map(n -> n.replaceAll(".+\\.", "")).collect(Collectors.toList());
+
                 if (!argNamesWithoutPackages.contains(arg)) {
                     return false;
                 }

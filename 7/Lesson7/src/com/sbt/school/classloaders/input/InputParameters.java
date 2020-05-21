@@ -68,10 +68,23 @@ public class InputParameters {
                         break;
 
 
+                    case METHOD_NAME:
+
+                        if (currentType == Flag.Type.HELP) {
+                            throw new IllegalArgumentException("Wrong parameters: help flag should be single");
+                        }
+
+                        break;
+
+
                     case ARGS:
 
                         if (currentType.equals(Flag.Type.HELP)) {
                             throw new IllegalArgumentException("Wrong parameters: help flag should be single");
+                        }
+
+                        if (currentType.equals(Flag.Type.ARGS)) {
+                            throw new IllegalArgumentException("Wrong parameters: args flag should be single for each method name");
                         }
 
                         break;
@@ -87,8 +100,12 @@ public class InputParameters {
                             throw new IllegalArgumentException(getSequenceError(currentType, Flag.Type.METHOD_NAME));
                         }
 
-                        if(currentType.equals(Flag.Type.METHOD_NAME)) {
+                        if (currentType.equals(Flag.Type.METHOD_NAME)) {
                             throw new IllegalArgumentException(getSequenceError(currentType, Flag.Type.CLASS_NAME));
+                        }
+
+                        if (currentType.equals(Flag.Type.PATH)) {
+                            throw new IllegalArgumentException(getSequenceError(currentType, Flag.Type.CLASS_NAME, Flag.Type.METHOD_NAME, Flag.Type.ARGS));
                         }
 
                         break;
@@ -106,11 +123,29 @@ public class InputParameters {
                 prevFlag = currentFlag;
             }
         }
+
     }
 
 
     private String getSequenceError(Flag.Type shouldBe, Flag.Type after) {
         throw new IllegalArgumentException("Flag " + flagList.getTypeFlagMap().get(shouldBe) + " should be after " + flagList.getTypeFlagMap().get(after));
+    }
+
+
+    private String getSequenceError(Flag.Type shouldBe, Flag.Type... after) {
+        throw new IllegalArgumentException("Flag " + flagList.getTypeFlagMap().get(shouldBe) + " should be after " + getTypeString(after));
+    }
+
+
+    private String getTypeString(Flag.Type[] types) {
+        if (types.length > 0) {
+            StringBuilder builder = new StringBuilder(flagList.getTypeFlagMap().get(types[0]));
+            for (int i = 1; i < types.length; i++) {
+                builder.append(" | ").append(flagList.getTypeFlagMap().get(types[i]));
+            }
+            return builder.toString();
+        }
+        return "";
     }
 
 
