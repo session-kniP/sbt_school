@@ -23,37 +23,58 @@ public class FixedThreadPool implements CThreadPool {
         }
     }
 
+    public synchronized boolean stop() {
+        for (Thread t : threads) {
+            if (t.getState().equals(Thread.State.RUNNABLE) || t.getState().equals(Thread.State.TIMED_WAITING)) {
+                return false;
+            }
+        }
+        poolThread.interrupt();
+        notify();
+        return true;
+    }
+
 
     @Override
-    public void start() {
+    public synchronized void start() {
         this.poolThread = new Thread(this);
         this.poolThread.start();
     }
 
     @Override
-    public void execute(Runnable runnable) {
+    public synchronized void execute(Runnable runnable) {
         taskQueue.add(runnable);
+        notify();
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         while (true) {
-            for (int i = 0; i < tasksNumber; i++) {
-                Thread.State state = threads[i].getState();
-                if (state.equals(Thread.State.NEW) || state.equals(Thread.State.TERMINATED)) {
-                    Runnable task;
-                    while ((task = taskQueue.poll()) == null) {
-                        try {
-                            Thread.sleep(2);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    threads[i] = new Thread(task);
-                    threads[i].start();
-                }
-            }
+            if (!Thread.currentThread().isInterrupted()) {
 
+                for (int i = 0; i < tasksNumber; i++) {
+                    Thread.State state = threads[i].getState();
+
+                    if (state.equals(Thread.State.NEW) || state.equals(Thread.State.TERMINATED)) {
+                        Runnable task;
+
+                        if ((task = taskQueue.poll()) == null) {
+                            try {
+                                wait();
+                            } catch (InterruptedException e) {
+                                if (e.getMessage() != null) {
+                                    System.out.println(e.getMessage());
+                                }
+                            }
+                        }
+
+                        threads[i] = new Thread(task);
+                        threads[i].start();
+                    }
+                }
+            } else {
+                return;
+            }
         }
     }
 }
