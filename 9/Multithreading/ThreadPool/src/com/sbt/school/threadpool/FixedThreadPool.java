@@ -1,5 +1,6 @@
 package com.sbt.school.threadpool;
 
+import java.io.ObjectInputStream;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
@@ -9,8 +10,10 @@ public class FixedThreadPool implements CThreadPool {
     private final Thread[] threads;
     private final Queue<Runnable> taskQueue;
     private Thread poolThread;
+    private final Object monitor;
 
     public FixedThreadPool(int tasksNumber) {
+        this.monitor = new Object();
         this.tasksNumber = tasksNumber;
         this.threads = new Thread[tasksNumber];
         this.taskQueue = new ArrayDeque<>();
@@ -29,8 +32,8 @@ public class FixedThreadPool implements CThreadPool {
                 return false;
             }
         }
-        poolThread.interrupt();
         notify();
+        poolThread.interrupt();
         return true;
     }
 
@@ -50,7 +53,7 @@ public class FixedThreadPool implements CThreadPool {
     @Override
     public synchronized void run() {
         while (true) {
-            if (!Thread.currentThread().isInterrupted()) {
+            if (!poolThread.isInterrupted()) {
 
                 for (int i = 0; i < tasksNumber; i++) {
                     Thread.State state = threads[i].getState();
@@ -61,6 +64,7 @@ public class FixedThreadPool implements CThreadPool {
                         if ((task = taskQueue.poll()) == null) {
                             try {
                                 wait();
+                                break;
                             } catch (InterruptedException e) {
                                 if (e.getMessage() != null) {
                                     System.out.println(e.getMessage());
@@ -76,5 +80,11 @@ public class FixedThreadPool implements CThreadPool {
                 return;
             }
         }
+
     }
+
+    public Object getMonitor() {
+        return monitor;
+    }
+
 }

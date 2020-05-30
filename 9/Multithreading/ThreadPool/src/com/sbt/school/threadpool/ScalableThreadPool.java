@@ -38,7 +38,6 @@ public class ScalableThreadPool implements CThreadPool {
             }
         }
         poolThread.interrupt();
-        notify();
         return true;
     }
 
