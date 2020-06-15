@@ -1,6 +1,5 @@
 package com.sbt.school.manager;
 
-import com.sbt.school.task.Task;
 import com.sbt.school.threadpool.FixedThreadPool;
 
 public class ExecutionManagerImpl<T> implements ExecutionManager<T>, Runnable {
@@ -12,17 +11,22 @@ public class ExecutionManagerImpl<T> implements ExecutionManager<T>, Runnable {
     private Runnable callback;
     private RunnableTask<T>[] tasks;
 
-    private boolean finished;
 
+    private volatile boolean finished;
+
+
+    //todo extend to fixed/dynamic thread pools used in this class
     public ExecutionManagerImpl() {
         this.threadPoolSize = 0;
         this.finished = false;
     }
 
+
     public ExecutionManagerImpl(int threadPoolSize) {
         this.threadPoolSize = threadPoolSize;
         this.finished = false;
     }
+
 
     @Override
     public Context execute(Runnable callback, RunnableTask<T>... tasks) {
@@ -37,6 +41,7 @@ public class ExecutionManagerImpl<T> implements ExecutionManager<T>, Runnable {
         return context;
     }
 
+
     @Override
     public synchronized void run() {
         pool = new FixedThreadPool(threadPoolSize > 0 ? threadPoolSize : tasks.length);   //tasks.length
@@ -47,24 +52,16 @@ public class ExecutionManagerImpl<T> implements ExecutionManager<T>, Runnable {
         }
 
         //to let thread pool start it's tasks processing
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        pool.waitForStart();
 
-
-        while (!pool.stop()) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Exception while waiting");
-            }
-        }
+        pool.waitForEnd();
 
         callback.run();
         this.finished = true;
     }
+
+
+
 
     public boolean isFinished() {
         return finished;

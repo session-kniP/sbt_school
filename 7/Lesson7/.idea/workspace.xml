@@ -1,18 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b1ab61af-3fb8-499f-8b5a-9651be50a4f3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../../9/Multithreading/src/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../9/Multithreading/src/com/sbt/school/factorial/FactorialCalculator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../../9/Multithreading/src/com/sbt/school/factorial/RandomFiller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Lesson7/META-INF/Lesson7.kotlin_module" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/sbt/school/classloaders/input/InputParameters.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/sbt/school/classloaders/input/InputParameters.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/sbt/school/classloaders/target/ModifyMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/sbt/school/classloaders/target/ModifyMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/sbt/school/classloaders/wrapper/ClassLoaderWrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/sbt/school/classloaders/wrapper/ClassLoaderWrapper.java" afterDir="false" />
-    </list>
+    <list default="true" id="b1ab61af-3fb8-499f-8b5a-9651be50a4f3" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -40,12 +29,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
-  </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="683" />
-    <option name="height" value="728" />
   </component>
   <component name="ProjectId" id="1cBskNJ4kZnN8MJ7HhCQ5UcmVbI" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />

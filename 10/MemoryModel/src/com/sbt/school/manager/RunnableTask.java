@@ -9,10 +9,10 @@ public class RunnableTask<T> implements Runnable {
     private final String taskName;
     private final Supplier<T> supplier;
     private T result;
-    private boolean success;
-    private boolean started;
-    private boolean interrupted;
-    private boolean finished;
+    private volatile boolean success;
+    private volatile boolean started;
+    private volatile boolean interrupted;
+    private volatile boolean finished;
 
     public RunnableTask(Supplier<T> supplier) {
         this.taskName = "Task " + getCounter();

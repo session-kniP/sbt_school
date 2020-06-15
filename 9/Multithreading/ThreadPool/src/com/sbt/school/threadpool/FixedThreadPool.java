@@ -10,13 +10,14 @@ public class FixedThreadPool implements CThreadPool {
     private final Thread[] threads;
     private final Queue<Runnable> taskQueue;
     private Thread poolThread;
-    private final Object monitor;
+
+    private volatile boolean started;   //not started thread pool execution but at least one task started
 
     public FixedThreadPool(int tasksNumber) {
-        this.monitor = new Object();
         this.tasksNumber = tasksNumber;
         this.threads = new Thread[tasksNumber];
         this.taskQueue = new ArrayDeque<>();
+        this.started = false;
         createThreads();
     }
 
@@ -32,8 +33,8 @@ public class FixedThreadPool implements CThreadPool {
                 return false;
             }
         }
-        notify();
         poolThread.interrupt();
+        notifyAll();
         return true;
     }
 
@@ -63,8 +64,10 @@ public class FixedThreadPool implements CThreadPool {
 
                         if ((task = taskQueue.poll()) == null) {
                             try {
-                                wait();
-                                break;
+                                if (!poolThread.isInterrupted()) {
+                                    wait();
+                                    break;
+                                }
                             } catch (InterruptedException e) {
                                 if (e.getMessage() != null) {
                                     System.out.println(e.getMessage());
@@ -74,6 +77,10 @@ public class FixedThreadPool implements CThreadPool {
 
                         threads[i] = new Thread(task);
                         threads[i].start();
+
+                        if (!started) {
+                            started = true;
+                        }
                     }
                 }
             } else {
@@ -83,8 +90,23 @@ public class FixedThreadPool implements CThreadPool {
 
     }
 
-    public Object getMonitor() {
-        return monitor;
+
+    /**
+     * Waiting while at least one task in thread pool begins its execution
+     */
+    public void waitForStart() {
+        while (true) {
+            if (started) break;
+        }
+    }
+
+    /**
+     * Waiting for ending of execution of tasks started in thread pool end stops its execution
+     */
+    public void waitForEnd() {
+        while (true) {
+            if (stop()) break;
+        }
     }
 
 }

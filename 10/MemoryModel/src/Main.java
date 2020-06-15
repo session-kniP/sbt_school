@@ -11,6 +11,8 @@ public class Main {
 
     static Task<String> task;
 
+
+    // !execution manager tests with exception by design!
     public static void main(String[] args) throws InterruptedException {
         System.out.println("------------Testing first task-------------\n");
         testTask();
@@ -123,6 +125,7 @@ public class Main {
         } while (!stringExecutionManager.isFinished());
 
         Context context = stringExecutionManager.execute(callback, taskArray);
+        System.out.println("That's the end");
         System.out.println(
                 "Completed " + context.getCompletedTaskCount() +
                         " | failed " + context.getFailedTaskCount() +

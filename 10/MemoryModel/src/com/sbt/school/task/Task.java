@@ -1,11 +1,8 @@
 package com.sbt.school.task;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Task<T> extends ReentrantLock {
@@ -14,7 +11,7 @@ public class Task<T> extends ReentrantLock {
     private T result;
     private final Object taskLock = new Object();
     private List<Thread> waitingThreads;
-    private boolean success;
+    private volatile boolean success;
 
     public Task(Callable<? extends T> callable) {
         this.callable = callable;
@@ -33,26 +30,27 @@ public class Task<T> extends ReentrantLock {
 
         try {
             if (!success) {
-                unlock();
                 throw new TaskException("Another thread catched exception with such callable condition", Thread.currentThread(), new Throwable());
             }
 
             if (result != null) {
-                unlock();
                 return result;
             }
             result = callable.call();
-            unlock();
+
             return result;
         } catch (Exception e) {
             this.success = false;
+
+            throw new TaskException(e.getMessage(), Thread.currentThread(), e);
+        } finally {
             if (isLocked()) {
                 unlock();
             }
-            throw new TaskException(e.getMessage(), Thread.currentThread(), e);
         }
     }
 
+    //dat proxy pattern... for state notification
     @Override
     public void lock() {
 
