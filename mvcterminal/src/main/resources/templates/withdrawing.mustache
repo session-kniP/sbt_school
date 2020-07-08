@@ -1,0 +1,17 @@
+{{>header}}
+    <h2>Withdrawing</h2>
+    <div>The amount must be multiple of:</div>
+    <div>
+        {{#values_allowed}}
+            <strong>{{.}}</strong>
+            <br/>
+        {{/values_allowed}}
+    </div>
+
+    <form method="post" action="/takeMoney">
+        Enter value:<input class="withdraw" name="amount"><br/>
+        <button type="submit">Submit</button>
+    </form>
+
+{{>back_to_menu}}
+{{>footer}}

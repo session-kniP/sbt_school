@@ -13,7 +13,8 @@ public class TerminalServerImpl implements TerminalServer {
     //let's imagine that we have the only user
     private final HardCodedUser user;
     private int wrongTriesAllowed;
-    private Timer timer;
+    private final Timer timer;
+    private BigDecimal valueAllowed;
 
 
     public TerminalServerImpl() {
@@ -21,6 +22,7 @@ public class TerminalServerImpl implements TerminalServer {
         this.user = new HardCodedUser(BigDecimal.valueOf(randomBalance));
         this.wrongTriesAllowed = 3;
         this.timer = new Timer();
+        this.valueAllowed = BigDecimal.valueOf(100.0f);
     }
 
 
@@ -110,7 +112,11 @@ public class TerminalServerImpl implements TerminalServer {
     }
 
     private boolean amountAllowed(BigDecimal amount) {
-        return amount.floatValue() % 100.0f == BigDecimal.ZERO.floatValue();
+        return amount.doubleValue() % valueAllowed.doubleValue() == 0.0;
+    }
+
+    public BigDecimal getValueAllowed() {
+        return valueAllowed;
     }
 
 }

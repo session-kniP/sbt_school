@@ -7,6 +7,7 @@ import com.sbt.school.terminalserver.TerminalServerImpl;
 
 import javax.security.auth.login.AccountLockedException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 
 public class TerminalImpl implements Terminal {
 
@@ -20,7 +21,7 @@ public class TerminalImpl implements Terminal {
     }
 
 
-    public boolean authorize(String pin) throws RuntimeException, AccountLockedException {
+    public boolean authorize(String pin) throws AccountLockedException, PinFormatException, SecurityException {
 
         try {
             boolean valid = validator.validate(pin);
@@ -43,7 +44,7 @@ public class TerminalImpl implements Terminal {
 
 
     public boolean deauthorize() {
-        if(user != null) {
+        if (user != null) {
             user = null;
             return true;
         } else {
@@ -93,6 +94,14 @@ public class TerminalImpl implements Terminal {
 
     public boolean localUserAuthorized() {
         return user != null;
+    }
+
+    @Override
+    public BigDecimal getValueAllowed() {
+        if (localUserAuthorized()) {
+            return server.getValueAllowed();
+        }
+        throw new SecurityException("User should be authorized");
     }
 
 }

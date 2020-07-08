@@ -17,4 +17,6 @@ public interface Terminal {
 
     BigDecimal withdraw(BigDecimal amount);
 
+    BigDecimal getValueAllowed();
+
 }

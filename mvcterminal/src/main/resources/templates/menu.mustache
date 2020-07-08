@@ -1,0 +1,11 @@
+{{>header}}
+
+    <div>Main menu:</div>
+
+    {{#main_menu}}
+        <form method="get" action="{{value}}">
+            <button class="menuBtn" type="submit">{{key}}</button>
+        </form>
+    {{/main_menu}}
+
+{{>footer}}
